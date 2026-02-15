@@ -8,7 +8,7 @@ class ModelCalibrator:
     def __init__(self, model_type, input_shape):
         self.model_type = model_type
         self.input_shape = input_shape
-        self.grid = {'lr': [0.01, 0.001, 0.0005, 0.0002], 'dropout': [0.1, 0.2, 0.3, 0,4], 'batch': [16, 32], 'epochs': [50, 60, 70, 80, 90, 100]}
+        self.grid = {'lr': [0.01, 0.001, 0.0005, 0.0002], 'dropout': [0.1, 0.2, 0.3, 0,4], 'batch': [16, 32, 64], 'epochs': [50, 60, 70, 80, 90, 100]}
 
     def run_calibration(self, X_t, y_t, X_v, y_v):
         best_cfg, best_r2 = None, -1
