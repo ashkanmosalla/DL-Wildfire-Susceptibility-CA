@@ -3,12 +3,13 @@ from tensorflow.keras.layers import Dense, Dropout, Bidirectional, SimpleRNN, LS
 from tensorflow.keras.models import Sequential, Model
 from catboost import CatBoostRegressor
 
+
 class WildfireArchitectures:
     """
     Implementation of the 6 core models as defined in the study methodology (Fig 3).
     Includes Deep Learning architectures and Gradient Boosting (CatBoost).
     """
-    
+
     @staticmethod
     def get_birnn(input_shape, dropout=0.1):
         """1. Bidirectional RNN - Top Performer in the Study."""
@@ -69,10 +70,17 @@ class WildfireArchitectures:
 
     @staticmethod
     def get_dnn(input_shape, dropout=0.2):
-        """5. Deep Neural Network (DNN) / MLP baseline."""
+        """5. Deep Neural Network (DNN).
+
+        Four hidden layers (256 -> 128 -> 64 -> 32), each with ReLU activation,
+        followed by a single linear output unit, consistent with the manuscript
+        (Section 2.4.1: 'an input layer, four hidden layers and an output layer').
+        """
         model = Sequential([
             Input(shape=(input_shape,)),
-            Dense(128, activation='relu'), 
+            Dense(256, activation='relu'),
+            Dropout(dropout),
+            Dense(128, activation='relu'),
             Dropout(dropout),
             Dense(64, activation='relu'),
             Dropout(dropout),
@@ -82,8 +90,14 @@ class WildfireArchitectures:
         return model
 
     @staticmethod
-    def get_catboost(iterations=500, learning_rate=0.05, depth=6):
-        """6. CatBoost Regressor - Gradient Boosting baseline."""
+    def get_catboost(iterations=80, learning_rate=0.05, depth=6):
+        """6. CatBoost Regressor - Gradient Boosting baseline.
+
+        Defaults reflect the tuned Frequency configuration reported in the
+        manuscript (Section 2.5: depth 6 and 80 iterations for Frequency,
+        depth 8 and 30 iterations for Likelihood; learning rate 0.05, seed 42).
+        Pass depth/iterations explicitly per target from the calling code.
+        """
         model = CatBoostRegressor(
             iterations=iterations,
             learning_rate=learning_rate,
